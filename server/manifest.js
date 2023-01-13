@@ -10,64 +10,62 @@ Dotenv.config({ path: `${__dirname}/.env` });
 
 // Glue manifest as a confidence store
 module.exports = new Confidence.Store({
-    server: {
-        host: 'localhost',
-        port: {
-            $param: 'PORT',
-            $coerce: 'number',
-            $default: 3000
-        },
-        debug: {
-            $filter: 'NODE_ENV',
-            $default: {
-                log: ['error', 'start'],
-                request: ['error']
-            },
-            production: {
-                request: ['implementation']
-            }
-        }
+  server: {
+    host: 'localhost',
+    port: {
+      $env: 'PORT',
+      $coerce: 'number',
+      $default: 3000
     },
-    register: {
-        plugins: [
-            {
-                plugin: '../lib', // Main plugin
-                options: {}
-            },
-            {
-<<<<<<< HEAD
-                plugin: './plugins/swagger'
-=======
-                plugin: '@hapipal/schwifty',
-                options: {
-                    $filter: 'NODE_ENV',
-                    $default: {},
-                    $base: {
-                        migrateOnStart: true,
-                        knex: {
-                            client: 'sqlite3',
-                            useNullAsDefault: true,     // Suggested for sqlite3
-                            connection: {
-                                filename: ':memory:'
-                            },
-                            migrations: {
-                                stub: Schwifty.migrationsStubPath
-                            }
-                        }
-                    },
-                    production: {
-                        migrateOnStart: false
-                    }
-                }
->>>>>>> 66973ef ((flavor) objection v3.0.0)
-            },
-            {
-                plugin: {
-                    $filter: 'NODE_ENV',
-                    $default: '@hapipal/hpal-debug',
-                    production: Toys.noop
-                }
-            }
-        ]
+    debug: {
+      $filter: { $env: 'NODE_ENV' },
+      $default: {
+        log: ['error'],
+        request: ['error']
+      },
+      production: {
+        request: ['implementation']
+      }
     }
+  },
+  register: {
+    plugins: [
+      {
+        plugin: '../lib', // Main plugin
+        options: {}
+      },
+      {
+        plugin: './plugins/swagger'
+      },
+      {
+        plugin: '@hapipal/schwifty',
+        options: {
+          $filter: 'NODE_ENV',
+          $default: {},
+          $base: {
+            migrateOnStart: true,
+            knex: {
+              client: 'mysql',
+              connection: {
+                host     : process.env.DB_HOST || '0.0.0.0',
+                user     : process.env.DB_USER || 'root',
+                password : process.env.DB_PASSWORD || 'hapi',
+                database : process.env.DB_DATABASE || 'user'
+              }
+            }
+          },
+          production: {
+            migrateOnStart: false
+          }
+        }
+      },
+      {
+        plugin: {
+          $filter: { $env: 'NODE_ENV' },
+          $default: '@hapipal/hpal-debug',
+          production: Toys.noop
+        }
+      }
+    ]
+  }
 });
