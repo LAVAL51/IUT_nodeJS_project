@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@anthonylaval946/iut-encrypt": "^1.0.0",
-    "@hapi/boom": "9.x.x",
+    "@hapi/boom": "^9.1.4",
     "@hapi/inert": "^7.0.0",
     "@hapi/jwt": "^3.0.0",
     "@hapipal/haute-couture": "4.x.x",
